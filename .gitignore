@@ -1,0 +1,6 @@
+venv/
+project/
+pycharm/
+.pycharm_helpers/
+docker-compose.yml
+.idea
