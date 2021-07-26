@@ -18,7 +18,7 @@ Make sure that your runtime environment has:
     ./rit.sh up dh-faker
     ```
 1. The stdout will now print on the names of the dropzones and the fake files that are being created.
-1. The state that will be reached at exit of the dh-faker container is that _N_ amount of dropzones are being ingested by iRODS.
+1. The end state at exit of the dh-faker container is that _N_ amount of dropzones are being ingested by iRODS.
    
 # TODO
 * Use a config file instead of editing in the script.

@@ -3,7 +3,7 @@ from faker import Faker
 import os
 import json
 
-fake = Faker("nl_NL")
+fake = Faker(["nl_NL", "de_DE", "zh_CN"])
 
 user = "jmelius"
 user_email = "fake-email@maastrichtuniversity.nl"
