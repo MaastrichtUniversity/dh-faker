@@ -3,17 +3,37 @@ from faker import Faker
 import os
 import json
 
-fake = Faker(["nl_NL", "de_DE", "zh_CN"])
-
+# region CONFIG
+# General options
 user = "jmelius"
 user_email = "fake-email@maastrichtuniversity.nl"
 data_steward = "opalmen"
 number_of_projects = 1
 number_of_collections_per_project = 5
 
+# Options for locale
+locale = False                       # False: only en_US active, True: multiple locales active
 
-def create_file(directory, category='text', nb_sentences=5):
-    file_name = fake.file_name(category=category)
+# Options for file names
+filename_specialchars = True        # If special characters should occur in file names
+# endregion
+
+if locale:
+    fake = Faker(["en_US", "nl_NL", "de_DE", "zh_CN"])
+else:
+    fake = Faker("en_US")
+
+# Note: A Linux file name cannot contain /
+# Note: A Windows file name cannot contain \ / : * ? " < > |
+# Note: A MacOS file name cannot contain / :
+specialchar_elements = (' ', '`', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', ';', '\'', ',', '.', '€',)
+
+
+def create_file(directory, category='text', nb_sentences=5, filename_specialchars=False):
+    if filename_specialchars:
+        file_name = "".join(fake.random_elements(elements=specialchar_elements, length=20, unique=True)) + ".txt"
+    else:
+        file_name = fake.file_name(category=category)
     f = open(directory + "/" + file_name, "a")
     f.write(fake.paragraph(nb_sentences=nb_sentences))
     f.close()
@@ -94,9 +114,9 @@ def main():
             directory = create_dir(token)
             create_file(directory)
             directory = create_dir(token, depth=3, category='video')
-            create_file(directory, category='video', nb_sentences=100)
+            create_file(directory, category='video', nb_sentences=100, filename_specialchars=filename_specialchars)
             directory = create_dir(token, depth=1, category='office')
-            create_file(directory, category='office', nb_sentences=250)
+            create_file(directory, category='office', nb_sentences=250, filename_specialchars=filename_specialchars)
             ingest_collection(token)
 
 
