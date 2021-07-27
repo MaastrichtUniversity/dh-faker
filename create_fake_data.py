@@ -165,7 +165,7 @@ def create_folder_structure(token):
                         nb_sentences=random.randint(0, configuration["maximum_sentences_per_file"]))
     if configuration["include_images"]:
         create_image_folder_structure(token)
-    if configuration["use_diacritics"] or configuration["use_diacritics"]:
+    if configuration["use_diacritics"] or configuration["use_specialchars"]:
         create_special_folderstructure(token)
 
 
