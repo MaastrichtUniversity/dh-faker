@@ -1,2 +1,3 @@
 git+https://github.com/MaastrichtUniversity/irods-rule-wrapper.git@develop#egg=irods-rule-wrapper
 Faker
+Pillow
