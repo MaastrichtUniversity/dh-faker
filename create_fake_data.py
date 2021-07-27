@@ -12,11 +12,11 @@ number_of_projects = 1
 number_of_collections_per_project = 5
 
 # Options for locale
-locale = False                       # False: only en_US active, True: multiple locales active
+locale = True                       # False: only en_US active, True: multiple locales active
 
 # Options for file names
-filename_diacritics = True           # If special accents should occur in filenames
-filename_specialchars = True        # If special characters should occur in file names
+filename_diacritics = True           # If special accents should occur in folder- and file names
+filename_specialchars = True        # If special characters should occur in folder- and file names
 # endregion
 
 if locale:
@@ -43,9 +43,17 @@ def create_file(directory, category='text', nb_sentences=5, filename_diacritics=
     print(file_name)
 
 
-def create_dir(token, depth=5, category='text'):
+def create_dir(token, depth=5, category='text', filename_diacritics=False, diacr_elem=diacritic_elements, filename_specialchars=False, specchar_elem=specialchar_elements):
     ingest_zone = os.path.join("/mnt/ingest/zones/", token)
-    full_path = fake.file_path(depth=depth, category=category)
+    full_path = ""
+    if filename_diacritics:
+        for i in range(depth+1):
+            full_path = full_path + "/" + "".join(fake.random_elements(elements=diacr_elem, length=5, unique=True))
+    elif filename_specialchars:
+        for i in range(depth+1):
+            full_path = full_path + "/" + "".join(fake.random_elements(elements=specchar_elem, length=5, unique=True))
+    else:
+        full_path = fake.file_path(depth=depth, category=category)
     path, file = os.path.split(full_path)
     path = ingest_zone + path
     os.makedirs(path, exist_ok=True)
@@ -114,11 +122,11 @@ def main():
         print(project.project_id)
         for y in range(number_of_collections_per_project):
             token = create_collection(project.project_id)
-            directory = create_dir(token)
-            create_file(directory)      # Creates file with all default options
-            directory = create_dir(token, depth=3, category='video')
+            directory = create_dir(token)   # all options to default
+            create_file(directory)          # all options to default
+            directory = create_dir(token, depth=3, category='video', filename_diacritics=filename_diacritics)
             create_file(directory, category='video', nb_sentences=100, filename_diacritics=filename_diacritics)
-            directory = create_dir(token, depth=1, category='office')
+            directory = create_dir(token, depth=1, category='office', filename_specialchars=filename_specialchars)
             create_file(directory, category='office', nb_sentences=250, filename_specialchars=filename_specialchars)
             ingest_collection(token)
 
