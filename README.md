@@ -12,13 +12,14 @@ Make sure that your runtime environment has:
  from the volume-bound `./docker-dev/staging-data` directory.
 
 # Usage
-1. Change the configuration settings on line 8-12
-1. Start the container with 
+1. Edit existing INI file or create a new INI file based on the example (config.ini). 
+1. Start the container with the default settings files (config.ini)
     ``` 
-    ./rit.sh up dh-faker
+    /rit.sh run --rm dh-faker
+    ```
+   Start the container with a custom settings files (settings.ini)
+    ``` 
+    /rit.sh run --rm dh-faker python create_fake_data.py settings.ini
     ```
 1. The stdout will now print on the names of the dropzones and the fake files that are being created.
 1. The end state at exit of the dh-faker container is that _N_ amount of dropzones are being ingested by iRODS.
-   
-# TODO
-* Use a config file instead of editing in the script.

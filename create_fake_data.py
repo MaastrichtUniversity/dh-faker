@@ -5,6 +5,7 @@ import json
 import time
 import configparser
 import random
+import sys
 
 configuration = {}
 fake = Faker()
@@ -23,6 +24,9 @@ def read_config_file(file):
     local_configuration = {}
     config = configparser.ConfigParser()
     config.read(file)
+    if len(config.sections()) == 0:
+        raise ValueError("Failed to open config file")
+
     local_configuration["locales"] = json.loads(config.get('GENERAL', 'Locales', fallback='["nl_NL"]'))
     local_configuration["sleep_between_ingests"] = config.getint('GENERAL', 'SleepBetweenIngests', fallback=5)
     local_configuration["number_of_contacts"] = config.getint('GENERAL', 'NumberOfContacts', fallback=3)
@@ -75,7 +79,7 @@ def create_file(directory, category='text', nb_sentences=5):
     f = open(directory + "/" + file_name, "w")
     f.write(fake.paragraph(nb_sentences=nb_sentences))
     f.close()
-    print(file_name)
+    print(directory + "/" + file_name + " was created")
 
 
 def create_image(directory):
@@ -86,7 +90,7 @@ def create_image(directory):
     f = open(directory + "/" + file_name, "wb")
     f.write(image)
     f.close()
-    print(file_name)
+    print(directory + "/" + file_name + " was created")
 
 
 def create_dir(token, depth=5, category='text'):
@@ -95,7 +99,7 @@ def create_dir(token, depth=5, category='text'):
     path, file = os.path.split(full_path)
     path = ingest_zone + path
     os.makedirs(path, exist_ok=True)
-    print(path)
+    print(path + " was created")
     return path
 
 
@@ -147,7 +151,7 @@ def create_collection(project_id):
         "contacts": create_contacts(configuration["number_of_contacts"])
     }
     token = RuleManager().create_drop_zone(data)
-    print(token)
+    print("Dropzone " + token + " was created")
     return token
 
 
@@ -177,7 +181,7 @@ def create_special_dir(token, depth=5, elements=("A", "B", "C")):
     path, file = os.path.split(full_path)
     path = ingest_zone + path
     os.makedirs(path, exist_ok=True)
-    print(path)
+    print(path + " was created")
     return path
 
 
@@ -186,7 +190,7 @@ def create_special_file(directory, nb_sentences=5, elements=("A", "B", "C")):
     f = open(directory + "/" + file_name, "w")
     f.write(fake.paragraph(nb_sentences=nb_sentences))
     f.close()
-    print(file_name)
+    print(directory + "/" + file_name + " was created")
 
 
 def create_special_folderstructure(token):
@@ -221,20 +225,27 @@ def create_image_folder_structure(token):
 def main():
     global configuration
     global fake
-    configuration = read_config_file("config.ini")
+
+    # Parse command line arguments
+    configuration_file = "config.ini"
+    if len(sys.argv) > 1:
+        configuration_file = sys.argv[1]
+
+    print("Running dh-faker with configuration file: " + configuration_file)
+    configuration = read_config_file(configuration_file)
     fake = Faker(configuration["locales"])
 
     if configuration["existing_project_id"] == "":
         for x in range(configuration["number_of_projects"]):
             project = create_project()
-            print(project.project_id)
+            print("Creating new project : " + project.project_id)
             for y in range(configuration["number_of_collections_per_project"]):
                 token = create_collection(project.project_id)
                 create_folder_structure(token)
                 ingest_collection(token)
                 time.sleep(configuration["sleep_between_ingests"])
     else:
-        print(configuration["existing_project_id"])
+        print("Existing project : " + configuration["existing_project_id"])
         for y in range(configuration["number_of_collections_per_project"]):
             token = create_collection(configuration["existing_project_id"])
             create_folder_structure(token)
