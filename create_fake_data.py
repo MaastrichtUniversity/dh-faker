@@ -34,6 +34,7 @@ def read_config_file(file):
     local_configuration["user_name"] = config.get('USER', 'UserName', fallback="jmelius")
     local_configuration["user_email"] = config.get('USER', 'UserEmail', fallback="fake-email@maastrichtuniversity.nl")
     local_configuration["data_steward"] = config.get('USER', 'DataSteward', fallback="opalmen")
+
     local_configuration["existing_project_id"] = config.get('PROJECT', 'ExistingProjectId', fallback="")
     local_configuration["number_of_projects"] = config.getint('PROJECT', 'NumberOfProjects', fallback=1)
     local_configuration["number_of_collections_per_project"] = config.getint('PROJECT', 'NumberOfCollectionsPerProject',
@@ -46,7 +47,7 @@ def read_config_file(file):
     local_configuration["number_of_files_per_folder"] = config.getint('FOLDER', 'NumberOfFilesPerFolder', fallback=2)
     local_configuration["maximum_sentences_per_file"] = config.getint('FOLDER', 'MaximumSentencesPerFile', fallback=100)
 
-    local_configuration["include_images"] = config.getboolean('IMAGES', 'IncludeImages', fallback="false")
+    local_configuration["include_images"] = config.getboolean('IMAGES', 'IncludeImages', fallback=False)
     local_configuration["number_of_image_folders"] = config.getint('IMAGES', 'NumberOfImageFolders', fallback=3)
     local_configuration["minimum_image_folder_depth"] = config.getint('IMAGES', 'MinimumImageFolderDepth', fallback=0)
     local_configuration["maximum_image_folder_depth"] = config.getint('IMAGES', 'MaximumImageFolderDepth', fallback=5)
@@ -56,8 +57,8 @@ def read_config_file(file):
     local_configuration["image_hue"] = json.loads(config.get('IMAGES', 'ImageHue', fallback='["red"]'))
     local_configuration["image_format"] = json.loads(config.get('IMAGES', 'ImageFormat', fallback='["png"]'))
 
-    local_configuration["use_diacritics"] = config.getboolean('SPECIALFOLDERS', 'UseDiacritics', fallback="false")
-    local_configuration["use_specialchars"] = config.getboolean('SPECIALFOLDERS', 'UseSpecialchars', fallback="false")
+    local_configuration["use_diacritics"] = config.getboolean('SPECIALFOLDERS', 'UseDiacritics', fallback=False)
+    local_configuration["use_specialchars"] = config.getboolean('SPECIALFOLDERS', 'UseSpecialchars', fallback=False)
     local_configuration["number_of_special_folders"] = config.getint('SPECIALFOLDERS', 'NumberOfSpecialFolders',
                                                                      fallback=3)
     local_configuration["minimum_special_folder_depth"] = config.getint('SPECIALFOLDERS', 'MinimumSpecialFolderDepth',
