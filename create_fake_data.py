@@ -6,6 +6,16 @@ import time
 import configparser
 import random
 import sys
+import logging
+
+log_level = os.environ['LOG_LEVEL']
+logging.basicConfig(level=logging.getLevelName(log_level), format='%(asctime)s %(levelname)s %(message)s')
+logger = logging.getLogger("Faker")
+
+indent0 = "* "
+indent1 = "-\t"
+indent2 = "--\t\t"
+indent3 = "---\t\t\t"
 
 configuration = {}
 fake = Faker()
@@ -20,6 +30,19 @@ diacritic_elements = (
 ' ', 'Á', 'á', 'À', 'à', 'Â', 'â', 'Ã', 'ã', 'Ä', 'ä', 'Å', 'å', 'Æ', 'æ', 'Ç', 'ç', 'Œ', 'œ', 'Ø', 'ø')
 
 
+def filter_verbose(record):
+    if "verbose" not in configuration:
+        return True
+    if configuration["verbose"] == 'low' and (record.msg.startswith(indent3) or record.msg.startswith(indent2)):
+        return False
+    elif configuration["verbose"] == 'medium' and record.msg.startswith(indent3):
+        return False
+    return True
+
+
+logging.getLogger('Faker').addFilter(filter_verbose)
+
+
 def read_config_file(file):
     local_configuration = {}
     config = configparser.ConfigParser()
@@ -30,6 +53,7 @@ def read_config_file(file):
     local_configuration["locales"] = json.loads(config.get('GENERAL', 'Locales', fallback='["nl_NL"]'))
     local_configuration["sleep_between_ingests"] = config.getint('GENERAL', 'SleepBetweenIngests', fallback=5)
     local_configuration["number_of_contacts"] = config.getint('GENERAL', 'NumberOfContacts', fallback=3)
+    local_configuration["verbose"] = config.get('GENERAL', 'Verbose', fallback="low")
 
     local_configuration["user_name"] = config.get('USER', 'UserName', fallback="jmelius")
     local_configuration["user_email"] = config.get('USER', 'UserEmail', fallback="fake-email@maastrichtuniversity.nl")
@@ -80,7 +104,7 @@ def create_file(directory, category='text', nb_sentences=5):
     f = open(directory + "/" + file_name, "w")
     f.write(fake.paragraph(nb_sentences=nb_sentences))
     f.close()
-    print(directory + "/" + file_name + " was created")
+    logger.info(indent3+directory + "/" + file_name + " was created")
 
 
 def create_image(directory):
@@ -91,7 +115,7 @@ def create_image(directory):
     f = open(directory + "/" + file_name, "wb")
     f.write(image)
     f.close()
-    print(directory + "/" + file_name + " was created")
+    logger.info(indent3+directory + "/" + file_name + " was created")
 
 
 def create_dir(token, depth=5, category='text'):
@@ -100,7 +124,7 @@ def create_dir(token, depth=5, category='text'):
     path, file = os.path.split(full_path)
     path = ingest_zone + path
     os.makedirs(path, exist_ok=True)
-    print(path + " was created")
+    logger.info(indent2+path + " was created")
     return path
 
 
@@ -152,12 +176,13 @@ def create_collection(project_id):
         "contacts": create_contacts(configuration["number_of_contacts"])
     }
     token = RuleManager().create_drop_zone(data)
-    print("Dropzone " + token + " was created")
+    logger.info(indent1+"Dropzone " + token + " was created")
     return token
 
 
 def ingest_collection(token):
     RuleManager().start_ingest(configuration["user_name"], token)
+    logger.info(indent1+"Ingest " + token + " was started")
 
 
 def create_folder_structure(token):
@@ -182,7 +207,8 @@ def create_special_dir(token, depth=5, elements=("A", "B", "C")):
     path, file = os.path.split(full_path)
     path = ingest_zone + path
     os.makedirs(path, exist_ok=True)
-    print(path + " was created")
+    logger.info(indent2+path + " was created")
+
     return path
 
 
@@ -191,7 +217,7 @@ def create_special_file(directory, nb_sentences=5, elements=("A", "B", "C")):
     f = open(directory + "/" + file_name, "w")
     f.write(fake.paragraph(nb_sentences=nb_sentences))
     f.close()
-    print(directory + "/" + file_name + " was created")
+    logger.info(indent3+directory + "/" + file_name + " was created")
 
 
 def create_special_folderstructure(token):
@@ -232,21 +258,21 @@ def main():
     if len(sys.argv) > 1:
         configuration_file = sys.argv[1]
 
-    print("Running dh-faker with configuration file: " + configuration_file)
+    logger.info("Running dh-faker with configuration file: " + configuration_file)
     configuration = read_config_file(configuration_file)
     fake = Faker(configuration["locales"])
 
     if configuration["existing_project_id"] == "":
         for x in range(configuration["number_of_projects"]):
             project = create_project()
-            print("Creating new project : " + project.project_id)
+            logger.info(indent0+"Creating new project : " + project.project_id)
             for y in range(configuration["number_of_collections_per_project"]):
                 token = create_collection(project.project_id)
                 create_folder_structure(token)
                 ingest_collection(token)
                 time.sleep(configuration["sleep_between_ingests"])
     else:
-        print("Existing project : " + configuration["existing_project_id"])
+        logger.info(indent0+"Existing project : " + configuration["existing_project_id"])
         for y in range(configuration["number_of_collections_per_project"]):
             token = create_collection(configuration["existing_project_id"])
             create_folder_structure(token)
