@@ -10,7 +10,6 @@ class SpecialFolder(BaseFolder):
         self.use_specialchars = configuration["use_specialchars"]
         self.minimum_folder_depth = configuration["minimum_special_folder_depth"]
         self.maximum_folder_depth = configuration["maximum_special_folder_depth"]
-        self.depth = random.randint(self.minimum_folder_depth, self.maximum_folder_depth)
         self.category = random.choice(configuration["categories"])
         self.number_of_files_per_folder = configuration["number_of_special_files_per_folder"]
         self.nb_sentences = random.randint(0, configuration["maximum_sentences_per_special_file"])
@@ -23,7 +22,7 @@ class SpecialFolder(BaseFolder):
                 self.create_special_folders(token, specialchar_elements)
 
     def create_special_folders(self, token, elements):
-        directory = self.create_special_dir(token, depth=self.depth, elements=elements)
+        directory = self.create_special_dir(token, depth=self.get_folder_depth(), elements=elements)
         for x in range(self.number_of_files_per_folder):
             self.create_special_file(directory, nb_sentences=self.nb_sentences, elements=elements)
 

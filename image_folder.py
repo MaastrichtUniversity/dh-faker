@@ -8,7 +8,6 @@ class ImageFolder(BaseFolder):
         self.number_of_folders = configuration["number_of_image_folders"]
         self.minimum_folder_depth = configuration["minimum_image_folder_depth"]
         self.maximum_folder_depth = configuration["maximum_image_folder_depth"]
-        self.depth = random.randint(self.minimum_folder_depth, self.maximum_folder_depth)
         self.category = "image"
         self.number_of_files_per_folder = configuration["number_of_images_per_folder"]
         self.nb_sentences = random.randint(0, configuration["maximum_sentences_per_file"])
@@ -18,7 +17,7 @@ class ImageFolder(BaseFolder):
 
     def create_folder_structure(self, token):
         for y in range(self.number_of_folders):
-            directory = self.create_dir(token, depth=self.depth, category=self.category)
+            directory = self.create_dir(token, depth=self.get_folder_depth(), category=self.category)
             for x in range(self.number_of_files_per_folder):
                 self.create_image(directory)
 

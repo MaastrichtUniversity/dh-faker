@@ -9,14 +9,13 @@ class BaseFolder:
         self.number_of_folders = configuration["number_of_folders"]
         self.minimum_folder_depth = configuration["minimum_folder_depth"]
         self.maximum_folder_depth = configuration["maximum_folder_depth"]
-        self.depth = random.randint(self.minimum_folder_depth, self.maximum_folder_depth)
         self.category = random.choice(configuration["categories"])
         self.number_of_files_per_folder = configuration["number_of_files_per_folder"]
         self.nb_sentences = random.randint(0, configuration["maximum_sentences_per_file"])
 
     def create_folder_structure(self, token):
         for y in range(self.number_of_folders):
-            directory = self.create_dir(token, depth=self.depth, category=self.category)
+            directory = self.create_dir(token, depth=self.get_folder_depth(), category=self.category)
             for x in range(self.number_of_files_per_folder):
                 self.create_file(directory, category=self.category, nb_sentences=self.nb_sentences)
 
@@ -35,3 +34,6 @@ class BaseFolder:
         f.write(self.fake.paragraph(nb_sentences=nb_sentences))
         f.close()
         logger.info(indent3 + directory + "/" + file_name + " was created")
+
+    def get_folder_depth(self):
+        return random.randint(self.minimum_folder_depth, self.maximum_folder_depth)
