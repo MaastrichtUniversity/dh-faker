@@ -1,4 +1,6 @@
 from base_folder import *
+import os
+
 logger = logging.getLogger("Faker")
 
 
@@ -20,11 +22,9 @@ class LargeFilesFolder(BaseFolder):
 
     def create_large_files(self, directory):
         for i in range(len(self.large_file_sizes)):
-            file_size = int(self.large_file_sizes[i])
-            file_name = self.large_file_names[i]
-            file_content = self.fake.binary(length=file_size)
-            f = open(directory + "/" + file_name, "wb")
-            f.write(file_content)
-            f.close()
+            file_size = str(int(int(self.large_file_sizes[i])/1024))
+            file_name = directory + "/" + self.large_file_names[i]
+            cmd = ("dd if=/dev/zero of=" + file_name + " count=" + file_size + " bs=1024")
+            os.system(cmd)
             logger.info(indent3 + directory + "/" + file_name + " was created")
 
