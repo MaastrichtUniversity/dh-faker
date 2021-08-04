@@ -52,6 +52,7 @@ class FakerConfig(metaclass=SingletonMeta):
         self.configuration["sleep_between_ingests"] = config.getint('GENERAL', 'SleepBetweenIngests', fallback=5)
         self.configuration["number_of_contacts"] = config.getint('GENERAL', 'NumberOfContacts', fallback=3)
         self.configuration["verbose"] = config.get('GENERAL', 'Verbose', fallback="low")
+        self.configuration["resource"] = config.get('GENERAL', 'Resource', fallback="replRescUM01")
 
         self.configuration["user_name"] = config.get('USER', 'UserName', fallback="jmelius")
         self.configuration["user_email"] = config.get('USER', 'UserEmail',

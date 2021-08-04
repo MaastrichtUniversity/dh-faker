@@ -6,7 +6,7 @@ logger = logging.getLogger("Faker")
 def create_project(configuration, fake):
     manager = RuleManager()
     project = manager.create_new_project("1-1-2018", "1-1-2018",
-                                         "iresResource", "replRescUM01", 42, fake.catch_phrase(),
+                                         "iresResource", configuration["resource"], 42, fake.catch_phrase(),
                                          configuration["user_name"],
                                          configuration["data_steward"], "XXXXXXXXX", "false", "false")
     manager.set_acl('default', 'own', configuration["data_steward"], project.project_path)

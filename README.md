@@ -15,11 +15,11 @@ Make sure that your runtime environment has:
 1. Edit existing INI file or create a new INI file based on the example (config.ini). 
 1. Start the container with the default settings files (config.ini)
     ``` 
-    /rit.sh run --rm dh-faker
+    ./rit.sh run --rm dh-faker
     ```
-   Start the container with a custom settings files (settings.ini)
+   Start the container with a custom settings files (simple.ini)
     ``` 
-    /rit.sh run --rm dh-faker python create_fake_data.py settings.ini
+    ./rit.sh run --rm dh-faker python create_fake_data.py simple.ini
     ```
 1. The stdout will now print on the names of the dropzones and the fake files that are being created.
 1. The end state at exit of the dh-faker container is that _N_ amount of dropzones are being ingested by iRODS.
