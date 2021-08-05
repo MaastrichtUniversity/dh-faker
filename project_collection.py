@@ -33,28 +33,70 @@ def create_contacts(amount, fake):
 
 
 def create_collection(project_id, configuration, fake):
-    data = {
-        "user": configuration["user_name"],
-        "creator": configuration["user_email"],
-        "project": project_id,
-        "title": fake.catch_phrase(),
-        "description": fake.sentence(),
-        "date": fake.date(),
-        "articles": '10.1016/j.cell.2021.02.021,10.1126/science.abc4346',
-        "organism_id": "ncbitaxon:http://purl.obolibrary.org/obo/NCBITaxon_9606",
-        "organism_label": "Homo sapiens",
-        "tissue_id": "efo:http://www.ebi.ac.uk/efo/EFO_0000803",
-        "tissue_label": "renal system",
-        "technology_id": "ero:http://purl.obolibrary.org/obo/ERO_0000570",
-        "technology_label": "heart perfusion",
-        "factors": [fake.word(), fake.word(), fake.word(), fake.word()],
-        "contacts": create_contacts(configuration["number_of_contacts"], fake)
-    }
+    data = get_metadata(project_id, configuration, fake)
     token = RuleManager().create_drop_zone(data)
-    logger.info(indent1+"Dropzone " + token + " was created")
+    logger.info(indent1 + "Dropzone " + token + " was created")
     return token
 
 
 def ingest_collection(configuration, token):
     RuleManager().start_ingest(configuration["user_name"], token)
-    logger.info(indent1+"Ingest " + token + " was started")
+    logger.info(indent1 + "Ingest " + token + " was started")
+
+
+def get_metadata(project_id, configuration, fake):
+    if configuration["collection_metadata"] == "full":
+        return {
+            "user": configuration["user_name"],
+            "creator": configuration["user_email"],
+            "project": project_id,
+            "title": fake.catch_phrase(),
+            "description": fake.sentence(),
+            "date": fake.date(),
+            "articles": '10.1016/j.cell.2021.02.021,10.1126/science.abc4346',
+            "organism_id": "ncbitaxon:http://purl.obolibrary.org/obo/NCBITaxon_9606",
+            "organism_label": "Homo sapiens",
+            "tissue_id": "efo:http://www.ebi.ac.uk/efo/EFO_0000803",
+            "tissue_label": "renal system",
+            "technology_id": "ero:http://purl.obolibrary.org/obo/ERO_0000570",
+            "technology_label": "heart perfusion",
+            "factors": [fake.word(), fake.word(), fake.word(), fake.word()],
+            "contacts": create_contacts(configuration["number_of_contacts"], fake)
+        }
+    if configuration["collection_metadata"] == "minimal":
+        return {
+            "user": configuration["user_name"],
+            "creator": configuration["user_email"],
+            "project": project_id,
+            "title": fake.catch_phrase(),
+            "description": "",
+            "date": fake.date(),
+            "articles": "",
+            "organism_id": "",
+            "organism_label": "",
+            "tissue_id": "",
+            "tissue_label": "",
+            "technology_id": "",
+            "technology_label": "",
+            "factors": "",
+            "contacts": "[]"
+        }
+    if configuration["collection_metadata"] == "wrong":
+        # Date is missing and therefore validation should fail
+        return {
+            "user": configuration["user_name"],
+            "creator": configuration["user_email"],
+            "project": project_id,
+            "title": fake.catch_phrase(),
+            "description": "",
+            "date": "",
+            "articles": "",
+            "organism_id": "",
+            "organism_label": "",
+            "tissue_id": "",
+            "tissue_label": "",
+            "technology_id": "",
+            "technology_label": "",
+            "factors": "",
+            "contacts": "[]"
+        }
