@@ -7,7 +7,7 @@ from base_folder import BaseFolder
 from image_folder import ImageFolder
 from special_folder import SpecialFolder
 from project_collection import create_project, create_collection, ingest_collection
-from large_files import LargeFilesFolder
+from file_size_folder import FileSizeFolder
 
 log_level = os.environ['LOG_LEVEL']
 logging.basicConfig(level=logging.getLevelName(log_level), format='%(asctime)s %(levelname)s %(message)s')
@@ -34,8 +34,8 @@ def create_folder_structure(configuration, fake, token):
         ImageFolder(configuration, fake).create_folder_structure(token)
     if configuration["use_diacritics"] or configuration["use_specialchars"]:
         SpecialFolder(configuration, fake).create_folder_structure(token)
-    if configuration["include_large_files"]:
-        LargeFilesFolder(configuration, fake).create_folder_structure(token)
+    if configuration["include_large_files"] or configuration["include_0byte_files"]:
+        FileSizeFolder(configuration, fake).create_folder_structure(token)
 
 
 def create_collections(configuration, fake, project_id):

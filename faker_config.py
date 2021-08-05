@@ -104,17 +104,18 @@ class FakerConfig(metaclass=SingletonMeta):
                                                                                   'MaximumSentencesPerSpecialFile',
                                                                                   fallback=100)
 
-        self.configuration["include_large_files"] = config.getboolean('LARGEFILES', 'IncludeLargeFiles', fallback=False)
-        self.configuration["number_of_large_file_folders"] = config.getint('LARGEFILES', 'NumberOfLargeFileFolders',
+        self.configuration["include_large_files"] = config.getboolean('FILESIZES', 'IncludeLargeFiles', fallback=False)
+        self.configuration["include_0byte_files"] = config.getboolean('FILESIZES', 'Include0ByteFiles', fallback=False)
+        self.configuration["number_of_large_file_folders"] = config.getint('FILESIZES', 'NumberOfFileSizeFolders',
                                                                         fallback=1)
-        self.configuration["minimum_large_file_folder_depth"] = config.getint('LARGEFILES',
-                                                                           'MinimumLargeFileFolderDepth',
+        self.configuration["minimum_large_file_folder_depth"] = config.getint('FILESIZES',
+                                                                           'MinimumFileSizeFolderDepth',
                                                                            fallback=0)
-        self.configuration["maximum_large_file_folder_depth"] = config.getint('LARGEFILES',
-                                                                           'MaximumLargeFileFolderDepth',
+        self.configuration["maximum_large_file_folder_depth"] = config.getint('FILESIZES',
+                                                                           'MaximumFileSizeFolderDepth',
                                                                            fallback=5)
-        self.configuration["large_file_sizes"] = json.loads(config.get('LARGEFILES', 'LargeFileSizes', fallback='["10240", "1048576"]'))
-        self.configuration["large_file_names"] = json.loads(config.get('LARGEFILES', 'LargeFileNames', fallback='["10Kb.bin", "1Mb.bin"]'))
+        self.configuration["large_file_sizes"] = json.loads(config.get('FILESIZES', 'LargeFileSizes', fallback='["10240", "1048576"]'))
+        self.configuration["large_file_names"] = json.loads(config.get('FILESIZES', 'LargeFileNames', fallback='["10Kb.bin", "1Mb.bin"]'))
 
         # self.configuration = local_configuration
         #
