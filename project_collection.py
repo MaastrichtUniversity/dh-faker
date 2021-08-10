@@ -8,7 +8,7 @@ def create_project(configuration, fake):
     project = manager.create_new_project("1-1-2018", "1-1-2018",
                                          "iresResource", configuration["resource"], 42, fake.catch_phrase(),
                                          configuration["user_name"],
-                                         configuration["data_steward"], "XXXXXXXXX", "false", "false")
+                                         configuration["data_steward"], "XXXXXXXXX", "false", "false", "false")
     manager.set_acl('default', 'own', configuration["data_steward"], project.project_path)
     manager.set_acl('default', 'own', configuration["user_name"], project.project_path)
     manager.set_acl('default', 'read', "datahub", project.project_path)
@@ -40,7 +40,7 @@ def create_collection(project_id, configuration, fake):
 
 
 def ingest_collection(configuration, token):
-    RuleManager().start_ingest(configuration["user_name"], token)
+    RuleManager().ingest(configuration["user_name"], token)
     logger.info(indent1 + "Ingest " + token + " was started")
 
 
