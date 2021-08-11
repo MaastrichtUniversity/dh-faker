@@ -15,7 +15,7 @@ Make sure that your runtime environment has:
 1. Edit existing INI file or create a new INI file based on the example (config.ini). 
 1. Start the container with the default settings files (config.ini)
     ``` 
-    ./rit.sh run --rm dh-faker
+    ./rit.sh run --rm dh-faker python create_fake_data.py
     ```
    Start the container with a custom settings files (simple.ini)
     ``` 
