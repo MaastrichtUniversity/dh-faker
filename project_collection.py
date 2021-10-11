@@ -4,7 +4,7 @@ logger = logging.getLogger("Faker")
 
 
 def create_project(configuration, fake):
-    manager = RuleManager()
+    manager = RuleManager(admin_mode=True)
     project = manager.create_new_project("1-1-2018", "1-1-2018",
                                          "iresResource", configuration["resource"], 42, fake.catch_phrase(),
                                          configuration["user_name"],
@@ -34,13 +34,13 @@ def create_contacts(amount, fake):
 
 def create_collection(project_id, configuration, fake):
     data = get_metadata(project_id, configuration, fake)
-    token = RuleManager().create_drop_zone(data)
+    token = RuleManager(admin_mode=True).create_drop_zone(data)
     logger.info(indent1 + "Dropzone " + token + " was created")
     return token
 
 
 def ingest_collection(configuration, token):
-    RuleManager().ingest(configuration["user_name"], token)
+    RuleManager(admin_mode=True).ingest(configuration["user_name"], token)
     logger.info(indent1 + "Ingest " + token + " was started")
 
 
