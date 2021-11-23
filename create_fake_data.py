@@ -43,6 +43,7 @@ def create_collections(configuration, fake, project_id):
         token = create_collection(project_id, configuration, fake)
         create_folder_structure(configuration, fake, token)
         ingest_collection(configuration, token)
+        logger.info(f"Sleeping for {configuration['sleep_between_ingests']} seconds")
         time.sleep(configuration["sleep_between_ingests"])
 
 
