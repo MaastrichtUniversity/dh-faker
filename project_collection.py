@@ -26,40 +26,54 @@ def create_project(configuration, fake):
     manager.set_acl("default", "own", configuration["data_steward"], project.project_path)
     manager.set_acl("default", "own", configuration["user_name"], project.project_path)
     manager.set_acl("default", "read", "datahub", project.project_path)
+    manager.session.cleanup()
     return project
 
 
 def create_drop_zone(project_id, configuration, fake):
     title = fake.catch_phrase()
+    user_name = configuration["user_name"]
     configuration["drop_zone_type_chosen"] = random.choice(configuration["drop_zone_type"])
     data = {
-        "user": configuration["user_name"],
+        "user": user_name,
         "project": project_id,
         "title": title,
         "dropzone_type": configuration["drop_zone_type_chosen"],
     }
-    token = RuleManager(admin_mode=True).create_drop_zone(
+
+    if configuration["drop_zone_type_chosen"] == "direct":
+        rule_manager = RuleManager(user_name)
+    else:
+        rule_manager = RuleManager(admin_mode=True)
+    token = rule_manager.create_drop_zone(
         data, "/opt/assets/schema.json", get_metadata(configuration, fake, title), "DataHub_General_schema", "1.0.0"
     )
-    logger.info(indent1 + "Dropzone " + token + " was created")
+    rule_manager.session.cleanup()
+    logger.info(f"{indent1} Dropzone {token} ({configuration['drop_zone_type_chosen']}) was created")
     return token
 
 
 def ingest_collection(configuration, token):
-    RuleManager(admin_mode=True).ingest(configuration["user_name"], token, configuration["drop_zone_type_chosen"])
-    logger.info(indent1 + "Ingest " + token + " was started")
+    user_name = configuration["user_name"]
+    rule_manager = RuleManager(user_name)
+    rule_manager.ingest(user_name, token, configuration["drop_zone_type_chosen"])
+    rule_manager.session.cleanup()
+    logger.info(f"{indent1} Ingest {token} was started")
 
 
 def get_metadata(configuration, fake, title):
     user_name = configuration["user_name"]
+    rule_manager = RuleManager(user_name)
+    display_name = rule_manager.get_user_attribute_value(user_name, "displayName", "false").value
+    rule_manager.session.cleanup()
+    split_display_name = display_name.split(" ", 1)
+
     json_file = open(
         "/opt/assets/instance.json",
     )
     tree_validation = json.load(json_file)
     tree_validation["pav:createdBy"] = f"https://mdr.datahubmaastricht.nl/user/{user_name}"
     tree_validation["oslc:modifiedBy"] = f"https://mdr.datahubmaastricht.nl/user/{user_name}"
-    display_name = RuleManager(admin_mode=True).get_user_attribute_value(user_name, "displayName", "false").value
-    split_display_name = display_name.split(" ", 1)
     tree_validation["2_Creator"]["creatorGivenName"]["@value"] = split_display_name[0]
     tree_validation["2_Creator"]["creatorFamilyName"]["@value"] = split_display_name[1]
     tree_validation["2_Creator"]["creatorFullName"]["@value"] = display_name

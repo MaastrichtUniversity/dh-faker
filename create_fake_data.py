@@ -53,7 +53,7 @@ def main():
     if len(sys.argv) > 1:
         configuration_file = sys.argv[1]
 
-    logger.info("Running dh-faker with configuration file: " + configuration_file)
+    logger.info(f"Running dh-faker with configuration file: {configuration_file}")
     FakerConfig().set_config(configuration_file)
     configuration = FakerConfig().get_config()
 
@@ -62,10 +62,10 @@ def main():
     if configuration["existing_project_id"] == "":
         for x in range(configuration["number_of_projects"]):
             project = create_project(configuration, fake)
-            logger.info(indent0 + "Creating new project : " + project.project_id)
+            logger.info(f"{indent0} Creating new project : {project.project_id}")
             create_collections(configuration, fake, project.project_id)
     else:
-        logger.info(indent0 + "Existing project : " + configuration["existing_project_id"])
+        logger.info(f"{indent0} Existing project : {configuration['existing_project_id']}")
         create_collections(configuration, fake, configuration["existing_project_id"])
 
 

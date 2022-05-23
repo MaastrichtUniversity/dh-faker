@@ -6,7 +6,7 @@ logger = logging.getLogger("Faker")
 
 class FileSizeFolder(BaseFolder):
     def __init__(self, configuration, fake):
-        self.fake = fake
+        super().__init__(configuration, fake)
         self.category = "text"
         self.include_large_files = configuration["include_large_files"]
         self.include_0byte_files = configuration["include_0byte_files"]
@@ -23,13 +23,62 @@ class FileSizeFolder(BaseFolder):
 
     def create_file_size_files(self, directory):
         if self.include_large_files:
-            for i in range(len(self.large_file_sizes)):
-                file_size = str(int(int(self.large_file_sizes[i]) / 1024))
-                file_name = directory + "/" + self.large_file_names[i]
-                cmd = "dd if=/dev/zero of=" + file_name + " count=" + file_size + " bs=1024"
-                os.system(cmd)
-                logger.info(indent3 + directory + "/" + file_name + " was created")
+            self.write_large_files(directory)
         if self.include_0byte_files:
-            f = open(directory + "/" + "0b.bin", "w")
-            f.close()
-            logger.info(indent3 + directory + "/" + "0b.bin" + " was created")
+            self.write_0byte_files(directory)
+
+    # region Large files
+    def write_large_files(self, directory):
+        for i in range(len(self.large_file_sizes)):
+            file_size = str(int(int(self.large_file_sizes[i]) / 1024))
+            file_name = self.large_file_names[i]
+            file_path = f"{directory}/{file_name}"
+            if self.drop_zone_type == "direct":
+                self.write_large_direct_file(file_name, file_path, file_size)
+            else:
+                self.write_large_mounted_file(file_path, file_size)
+            logger.info(f"{indent3}{file_path} was created")
+
+    @staticmethod
+    def write_large_mounted_file(file_path, file_size):
+        cmd = "dd if=/dev/zero of=" + file_path + " count=" + file_size + " bs=1024"
+        os.system(cmd)
+
+    def write_large_direct_file(self, file_name, full_path, file_size):
+        tmp_path = f"/tmp/{file_name}"
+        self.write_large_mounted_file(tmp_path, file_size)
+
+        rule_manager = RuleManager(self.username)
+        rule_manager.session.data_objects.put(tmp_path, full_path)
+        rule_manager.session.cleanup()
+        os.remove(tmp_path)
+
+    # endregion
+
+    # region 0byte files
+
+    def write_0byte_files(self, directory):
+        file_name = "0b.bin"
+        file_path = f"{directory}/{file_name}"
+        if self.drop_zone_type == "direct":
+            self.write_0byte_direct_file(file_path, file_name)
+        else:
+            self.write_0byte_mounted_file(file_path)
+
+    @staticmethod
+    def write_0byte_mounted_file(file_path):
+        f = open(file_path, "w")
+        f.close()
+        logger.info(f"{indent3}{file_path} was created")
+
+    def write_0byte_direct_file(self, file_path, file_name):
+        tmp_path = f"/tmp/{file_name}"
+        self.write_0byte_mounted_file(tmp_path)
+
+        rule_manager = RuleManager(self.username)
+        rule_manager.session.data_objects.put(tmp_path, file_path)
+        rule_manager.session.cleanup()
+        os.remove(tmp_path)
+        logger.info(f"{indent3}{file_path} was created")
+
+    # endregion
