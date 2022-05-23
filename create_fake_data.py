@@ -9,8 +9,8 @@ from special_folder import SpecialFolder
 from project_collection import create_project, create_collection, ingest_collection
 from file_size_folder import FileSizeFolder
 
-log_level = os.environ['LOG_LEVEL']
-logging.basicConfig(level=logging.getLevelName(log_level), format='%(asctime)s %(levelname)s %(message)s')
+log_level = os.environ["LOG_LEVEL"]
+logging.basicConfig(level=logging.getLevelName(log_level), format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("Faker")
 
 
@@ -18,9 +18,9 @@ def filter_verbose(record):
     configuration = FakerConfig().get_config()
     if "verbose" not in configuration:
         return True
-    if configuration["verbose"] == 'low' and (record.msg.startswith(indent3) or record.msg.startswith(indent2)):
+    if configuration["verbose"] == "low" and (record.msg.startswith(indent3) or record.msg.startswith(indent2)):
         return False
-    elif configuration["verbose"] == 'medium' and record.msg.startswith(indent3):
+    elif configuration["verbose"] == "medium" and record.msg.startswith(indent3):
         return False
     return True
 
@@ -62,10 +62,10 @@ def main():
     if configuration["existing_project_id"] == "":
         for x in range(configuration["number_of_projects"]):
             project = create_project(configuration, fake)
-            logger.info(indent0+"Creating new project : " + project.project_id)
+            logger.info(indent0 + "Creating new project : " + project.project_id)
             create_collections(configuration, fake, project.project_id)
     else:
-        logger.info(indent0+"Existing project : " + configuration["existing_project_id"])
+        logger.info(indent0 + "Existing project : " + configuration["existing_project_id"])
         create_collections(configuration, fake, configuration["existing_project_id"])
 
 

@@ -1,4 +1,5 @@
 from base_folder import *
+
 logger = logging.getLogger("Faker")
 
 
@@ -23,8 +24,8 @@ class ImageFolder(BaseFolder):
 
     def create_image(self, directory):
         file_name = self.fake.file_name(category="image", extension=self.extension)
-        image = self.fake.image(size=self.size, hue=self.hue, luminosity='random', image_format=self.extension)
+        image = self.fake.image(size=self.size, hue=self.hue, luminosity="random", image_format=self.extension)
         f = open(directory + "/" + file_name, "wb")
         f.write(image)
         f.close()
-        logger.info(indent3+directory + "/" + file_name + " was created")
+        logger.info(indent3 + directory + "/" + file_name + " was created")

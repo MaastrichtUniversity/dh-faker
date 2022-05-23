@@ -21,13 +21,12 @@ class FileSizeFolder(BaseFolder):
             directory = self.create_dir(token, depth=self.get_folder_depth(), category=self.category)
             self.create_file_size_files(directory)
 
-
     def create_file_size_files(self, directory):
         if self.include_large_files:
             for i in range(len(self.large_file_sizes)):
-                file_size = str(int(int(self.large_file_sizes[i])/1024))
+                file_size = str(int(int(self.large_file_sizes[i]) / 1024))
                 file_name = directory + "/" + self.large_file_names[i]
-                cmd = ("dd if=/dev/zero of=" + file_name + " count=" + file_size + " bs=1024")
+                cmd = "dd if=/dev/zero of=" + file_name + " count=" + file_size + " bs=1024"
                 os.system(cmd)
                 logger.info(indent3 + directory + "/" + file_name + " was created")
         if self.include_0byte_files:

@@ -1,5 +1,8 @@
 import random
+import os
+
 from faker_config import *
+
 logger = logging.getLogger("Faker")
 
 
@@ -19,7 +22,7 @@ class BaseFolder:
             for x in range(self.number_of_files_per_folder):
                 self.create_file(directory, category=self.category, nb_sentences=self.nb_sentences)
 
-    def create_dir(self, token, depth=5, category='text'):
+    def create_dir(self, token, depth=5, category="text"):
         ingest_zone = os.path.join("/mnt/ingest/zones/", token)
         full_path = self.fake.file_path(depth=depth, category=category)
         path, file = os.path.split(full_path)
@@ -28,7 +31,7 @@ class BaseFolder:
         logger.info(indent2 + path + " was created")
         return path
 
-    def create_file(self, directory, category='text', nb_sentences=5):
+    def create_file(self, directory, category="text", nb_sentences=5):
         file_name = self.fake.file_name(category=category)
         f = open(directory + "/" + file_name, "w")
         f.write(self.fake.paragraph(nb_sentences=nb_sentences))
