@@ -40,7 +40,7 @@ def create_folder_structure(configuration, fake, token):
 
 def create_collections(configuration, fake, project_id):
     for y in range(configuration["number_of_collections_per_project"]):
-        token = create_collection(project_id, configuration, fake)
+        token = create_drop_zone(project_id, configuration, fake)
         create_folder_structure(configuration, fake, token)
         ingest_collection(configuration, token)
         logger.info(f"Sleeping for {configuration['sleep_between_ingests']} seconds")

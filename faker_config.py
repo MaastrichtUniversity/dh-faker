@@ -1,5 +1,7 @@
 import json
 import configparser
+import logging
+import os
 
 
 # Note: A Linux file name cannot contain /
@@ -98,6 +100,7 @@ class FakerConfig(metaclass=SingletonMeta):
         self.configuration["verbose"] = config.get("GENERAL", "Verbose", fallback="low")
         self.configuration["resource"] = config.get("GENERAL", "Resource", fallback="replRescUM01")
         self.configuration["collection_metadata"] = config.get("GENERAL", "CollectionMetadata", fallback="minimal")
+        self.configuration["drop_zone_type"] = json.loads(config.get("GENERAL", "DropZoneType", fallback="direct"))
 
         self.configuration["user_name"] = config.get("USER", "UserName", fallback="jmelius")
         self.configuration["user_email"] = config.get(

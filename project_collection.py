@@ -27,18 +27,24 @@ def create_project(configuration, fake):
     return project
 
 
-def create_collection(project_id, configuration, fake):
+def create_drop_zone(project_id, configuration, fake):
     title = fake.catch_phrase()
-    data = {"user": configuration["user_name"], "project": project_id, "title": title}
+    configuration["drop_zone_type_chosen"] = random.choice(configuration["drop_zone_type"])
+    data = {
+        "user": configuration["user_name"],
+        "project": project_id,
+        "title": title,
+        "dropzone_type": configuration["drop_zone_type_chosen"],
+    }
     token = RuleManager(admin_mode=True).create_drop_zone(
-        data, "/opt/assets/schema.json", get_metadata(configuration, fake, title)
+        data, "/opt/assets/schema.json", get_metadata(configuration, fake, title), "DataHub_General_schema", "1.0.0"
     )
     logger.info(indent1 + "Dropzone " + token + " was created")
     return token
 
 
 def ingest_collection(configuration, token):
-    RuleManager(admin_mode=True).ingest(configuration["user_name"], token)
+    RuleManager(admin_mode=True).ingest(configuration["user_name"], token, configuration["drop_zone_type_chosen"])
     logger.info(indent1 + "Ingest " + token + " was started")
 
 
