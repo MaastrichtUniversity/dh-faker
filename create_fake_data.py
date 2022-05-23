@@ -1,12 +1,12 @@
-from faker import Faker
 import time
 import sys
 
+from faker import Faker
 from faker_config import *
 from base_folder import BaseFolder
 from image_folder import ImageFolder
 from special_folder import SpecialFolder
-from project_collection import create_project, create_collection, ingest_collection
+from project_collection import create_project, create_drop_zone, ingest_collection
 from file_size_folder import FileSizeFolder
 
 log_level = os.environ["LOG_LEVEL"]
