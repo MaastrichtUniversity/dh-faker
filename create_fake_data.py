@@ -49,12 +49,16 @@ def create_collections(configuration, fake, project_id):
 
 def main():
     # Parse command line arguments
-    configuration_file = "config.ini"
-    if len(sys.argv) > 1:
-        configuration_file = sys.argv[1]
+    arguments = FakerConfig().parse_arguments()
+    FakerConfig().set_config(arguments)
 
-    logger.info(f"Running dh-faker with configuration file: {configuration_file}")
-    FakerConfig().set_config(configuration_file)
+#     configuration_file = "config.ini"
+#     if len(sys.argv) > 1:
+#         configuration_file = sys.argv[1]
+
+#     logger.info(f"Running dh-faker with configuration file: {configuration_file}")
+#     FakerConfig().set_config(configuration_file)
+
     configuration = FakerConfig().get_config()
 
     fake = Faker(configuration["locales"])

@@ -1,8 +1,10 @@
+import argparse
 import json
 import configparser
 import logging
 import os
 
+logger = logging.getLogger("Faker")
 
 # Note: A Linux file name cannot contain /
 # Note: A Windows file name cannot contain \ / : * ? " < > |
@@ -87,11 +89,60 @@ class SingletonMeta(type):
 class FakerConfig(metaclass=SingletonMeta):
     configuration = {}
 
-    def set_config(self, file):
+    def parse_arguments(self):
+        # Parse any conf_file specification
+        # We make this parser with add_help=False so that
+        # it doesn't parse -h and print help.
+        conf_parser = argparse.ArgumentParser(
+            # Turn off help, so we print all options in response to -h
+            add_help=False
+        )
+        conf_parser.add_argument("-c", "--config", help="Specify other config file ", metavar="FILE")
+        args, remaining_argv = conf_parser.parse_known_args()
+
+        default_conf_file = 'config.ini'
+
+        conf_file = None
+        if not args.config and os.path.exists(default_conf_file):
+            conf_file = default_conf_file
+        elif args.config and os.path.exists(args.config):
+            conf_file = args.config
+        elif args.config and os.path.exists(args.config):
+            raise Exception('Config file %s does not exist' % args.config)
+
+        # Parse config file
         config = configparser.ConfigParser()
-        config.read(file)
-        if len(config.sections()) == 0:
-            raise ValueError("Failed to open config file")
+        config.read(conf_file)
+
+        # Parse rest of arguments
+        # Don't suppress add_help here so it will handle -h
+        parser = argparse.ArgumentParser(
+            # Inherit options from config_parser
+            parents=[conf_parser],
+            formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, max_help_position=35, width=100)
+        )
+
+        # User arguments
+        user_group = parser.add_argument_group('user arguments')
+        user_group.add_argument("--username", metavar='NAME', help="Override config file iRODS username")
+
+        # Project arguments
+        project_group = parser.add_argument_group('project arguments')
+        project_group.add_argument("--existing_project_id", metavar='P000000001', help="Override config file Existing project ID")
+
+        # TODO: Setting these overrides can be done prettier
+        overrides = parser.parse_args(remaining_argv)
+        if overrides.username is not None:
+            config.set('USER', 'UserName', overrides.username)
+
+        if overrides.existing_project_id is not None:
+            config.set('PROJECT', 'ExistingProjectId', overrides.existing_project_id)
+
+        logger.info("Running dh-faker with configuration file: " + conf_file)
+
+        return config
+
+    def set_config(self, config):
 
         self.configuration["locales"] = json.loads(config.get("GENERAL", "Locales", fallback='["nl_NL"]'))
         self.configuration["sleep_between_ingests"] = config.getint("GENERAL", "SleepBetweenIngests", fallback=5)
