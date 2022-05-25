@@ -1,10 +1,11 @@
 from base_folder import *
+
 logger = logging.getLogger("Faker")
 
 
 class SpecialFolder(BaseFolder):
     def __init__(self, configuration, fake):
-        self.fake = fake
+        super().__init__(configuration, fake)
         self.number_of_folders = configuration["number_of_special_folders"]
         self.use_diacritics = configuration["use_diacritics"]
         self.use_specialchars = configuration["use_specialchars"]
@@ -27,21 +28,26 @@ class SpecialFolder(BaseFolder):
             self.create_special_file(directory, nb_sentences=self.nb_sentences, elements=elements)
 
     def create_special_dir(self, token, depth=5, elements=("A", "B", "C")):
-        ingest_zone = os.path.join("/mnt/ingest/zones/", token)
         full_path = ""
         for i in range(depth + 1):
             full_path = full_path + "/" + "".join(self.fake.random_elements(elements=elements, length=5, unique=True))
-        path, file = os.path.split(full_path)
-        path = ingest_zone + path
-        os.makedirs(path, exist_ok=True)
-        logger.info(indent2 + path + " was created")
+
+        if self.drop_zone_type == "direct":
+            path = self.make_direct_dir(token, full_path)
+        else:
+            path = self.make_mounted_dir(token, full_path)
+
+        logger.info(f"{indent2}{path} was created")
 
         return path
 
     def create_special_file(self, directory, nb_sentences=5, elements=("A", "B", "C")):
         file_name = "".join(self.fake.random_elements(elements=elements, length=20, unique=True)) + ".txt"
-        f = open(directory + "/" + file_name, "w")
-        f.write(self.fake.paragraph(nb_sentences=nb_sentences))
-        f.close()
-        logger.info(indent3 + directory + "/" + file_name + " was created")
+        fake_file = self.fake.paragraph(nb_sentences=nb_sentences)
 
+        if self.drop_zone_type == "direct":
+            self.write_direct_file(directory, file_name, fake_file)
+        else:
+            self.write_mounted_file(directory, file_name, fake_file)
+
+        logger.info(f"{indent3}{directory}/{file_name} was created")
