@@ -9,19 +9,22 @@ logger = logging.getLogger("Faker")
 def create_project(configuration, fake):
     manager = RuleManager(admin_mode=True)
     project = manager.create_new_project(
-        "1-1-2018",
-        "1-1-2018",
         "iresResource",
         configuration["resource"],
-        42,
         fake.catch_phrase(),
         configuration["user_name"],
         configuration["data_steward"],
         "XXXXXXXXX",
-        "false",
-        "false",
-        "false",
-        "DataHub_general_schema",
+        {
+            "authorization_period_end_date": "1-1-2018",
+            "data_retention_period_end_date": "1-1-2018",
+            "storage_quota_gb": 42,
+            "enable_open_access": "false",
+            "enable_archive": "false",
+            "enable_unarchive": "false",
+            "enable_dropzone_sharing": "false",
+            "collection_metadata_schemas":  "DataHub_general_schema",
+        },
     )
     manager.set_acl("default", "own", configuration["data_steward"], project.project_path)
     manager.set_acl("default", "own", configuration["user_name"], project.project_path)
