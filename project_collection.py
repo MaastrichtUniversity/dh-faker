@@ -16,14 +16,14 @@ def create_project(configuration, fake):
         configuration["data_steward"],
         "XXXXXXXXX",
         {
-            "authorization_period_end_date": "1-1-2018",
-            "data_retention_period_end_date": "1-1-2018",
-            "storage_quota_gb": 42,
-            "enable_open_access": "false",
-            "enable_archive": "false",
-            "enable_unarchive": "false",
-            "enable_dropzone_sharing": "false",
-            "collection_metadata_schemas":  "DataHub_general_schema",
+            "authorizationPeriodEndDate": "1-1-2018",
+            "dataRetentionPeriodEndDate": "1-1-2018",
+            "storageQuotaGb": 42,
+            "enableOpenAccessExport": "false",
+            "enableArchive": "false",
+            "enableUnarchive": "false",
+            "enableDropzoneSharing": "false",
+            "collectionMetadataSchemas":  "DataHub_general_schema",
         },
     )
     manager.set_acl("default", "own", configuration["data_steward"], project.project_path)
