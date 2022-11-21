@@ -9,7 +9,7 @@ logger = logging.getLogger("Faker")
 def create_project(configuration, fake):
     manager = RuleManager(admin_mode=True)
     project = manager.create_new_project(
-        "iresResource",
+        "ires-hnas-umResource",
         configuration["resource"],
         fake.catch_phrase(),
         configuration["user_name"],
