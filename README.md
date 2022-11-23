@@ -7,18 +7,19 @@ This faker application is tightly coupled to the DataHub iRODS infrastructure as
 
 # Before you start
 Make sure that your runtime environment has:
-* a running instance of the `irods` and `ires` container
+* a running instance of the `icat` and `ires-hnas-um` container
+* a "finished" `keycloak` (?) and `sram-sync` (i.e. `up` & wait for them to complete their run)
 * a value of `USE_SAMBA=false` in the irods.secrets.cfg file. This will ensure that both iRODS and dh-faker use the dropzones
  from the volume-bound `./docker-dev/staging-data` directory.
 
 # Basic usage
-1. Edit existing INI file or create a new INI file based on the example (config.ini). 
+1. Edit existing INI file or create a new INI file based on the example (config.ini).
 1. Start the container with the default settings files (config.ini)
-    ``` 
+    ```
     ./rit.sh run --rm dh-faker python create_fake_data.py
     ```
    Start the container with a custom settings files (simple.ini)
-    ``` 
+    ```
     ./rit.sh run --rm dh-faker python create_fake_data.py -c simple.ini
     ```
 1. The stdout will now print on the names of the dropzones and the fake files that are being created.
@@ -28,5 +29,5 @@ Make sure that your runtime environment has:
 It's possible to override certain config vars on the command line:
 
 ```
-./rit.sh run --rm dh-faker python create_fake_data.py -c simple.ini --username pvanschay2 --existing_project_id P000000022 
+./rit.sh run --rm dh-faker python create_fake_data.py -c simple.ini --username pvanschay2 --existing_project_id P000000022
 ```
