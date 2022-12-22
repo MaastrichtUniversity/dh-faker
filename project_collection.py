@@ -1,4 +1,5 @@
 import random
+import subprocess
 
 from irodsrulewrapper.rule import RuleManager
 from faker_config import *
@@ -58,6 +59,7 @@ def create_drop_zone(project_id, configuration, fake):
 
 def ingest_collection(configuration, token):
     user_name = configuration["user_name"]
+    subprocess.call(['chmod', '-R', '777', '/mnt/ingest'])
     rule_manager = RuleManager(user_name)
     rule_manager.ingest(user_name, token, configuration["drop_zone_type_chosen"])
     rule_manager.session.cleanup()
