@@ -22,6 +22,7 @@ ENV PYTHONUNBUFFERED 1
 
 ADD docker/requirements.txt ./
 RUN pip3 install -r requirements.txt
+RUN chmod 777 -R /usr/local/lib/python*
 
 # Entrypoint
 CMD ["python", "-u", "create_fake_data.py"]
