@@ -19,7 +19,6 @@ def create_project(configuration, fake):
             "authorizationPeriodEndDate": "1-1-2018",
             "dataRetentionPeriodEndDate": "1-1-2018",
             "storageQuotaGb": 42,
-            "enableOpenAccessExport": "false",
             "enableArchive": "false",
             "enableUnarchive": "false",
             "enableDropzoneSharing": "false",
