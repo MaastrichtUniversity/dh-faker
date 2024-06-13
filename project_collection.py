@@ -57,7 +57,7 @@ def create_drop_zone(project_id, configuration, fake):
 
 def ingest_collection(configuration, token):
     user_name = configuration["user_name"]
-    rule_manager = RuleManager(user_name)
+    rule_manager = RuleManager(admin_mode=True)
     rule_manager.ingest(user_name, token, configuration["drop_zone_type_chosen"])
     rule_manager.session.cleanup()
     logger.info(f"{indent1} Ingest {token} was started")
