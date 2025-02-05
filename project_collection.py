@@ -22,12 +22,12 @@ def create_project(configuration, fake):
             "enableArchive": "false",
             "enableUnarchive": "false",
             "enableDropzoneSharing": "false",
-            "collectionMetadataSchemas":  "DataHub_general_schema",
+            "collectionMetadataSchemas": "DataHub_general_schema",
         },
     )
     manager.set_acl("default", "own", configuration["data_steward"], project.project_path)
     manager.set_acl("default", "own", configuration["user_name"], project.project_path)
-    manager.set_acl("default", "read", "datahub", project.project_path)
+    manager.set_acl("default", "read_object", "datahub", project.project_path)
     manager.session.cleanup()
     return project
 
